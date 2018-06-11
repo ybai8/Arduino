@@ -103,6 +103,8 @@ void stop() {
 
 void setSpeed(int p) {
   pwm = p;
+  analogWrite(ENA, pwm);
+  analogWrite(ENB, pwm);
 }
 
 void loop() {

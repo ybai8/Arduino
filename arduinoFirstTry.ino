@@ -48,8 +48,6 @@ void setup() {
 }
 
 void forward() {
-  digitalWrite(ENA, HIGH);
-  digitalWrite(ENB, HIGH);
   analogWrite(ENA, pwm);
   analogWrite(ENB, pwm);
   digitalWrite(IN1, HIGH);
@@ -60,8 +58,6 @@ void forward() {
 }
 
 void backward() {
-  digitalWrite(ENA, HIGH);
-  digitalWrite(ENB, HIGH);
   analogWrite(ENA, pwm);
   analogWrite(ENB, pwm);
   digitalWrite(IN1, LOW);
@@ -72,8 +68,6 @@ void backward() {
 }
 
 void leftward() {
-  digitalWrite(ENA, HIGH);
-  digitalWrite(ENB, HIGH);
   analogWrite(ENA, pwm);
   analogWrite(ENB, pwm);
   digitalWrite(IN1, LOW);
@@ -84,8 +78,6 @@ void leftward() {
 }
 
 void rightward() {
-  digitalWrite(ENA, HIGH);
-  digitalWrite(ENB, HIGH);
   analogWrite(ENA, pwm);
   analogWrite(ENB, pwm);
   digitalWrite(IN1, HIGH);

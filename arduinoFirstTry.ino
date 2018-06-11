@@ -32,6 +32,11 @@
 #define IN3 9
 #define IN4 11
 
+//define line tracking IO pin
+#define LT_R !digitalRead(10)
+#define LT_M !digitalRead(4)
+#define LT_L !digitalRead(2)
+
 int pwm = 127;
 char signal;
 
@@ -99,6 +104,20 @@ void setSpeed(int p) {
   analogWrite(ENB, pwm);
 }
 
+void lineTracking() {
+  while(!Serial.available()) {
+    while(LT_M) {
+      forward();
+    }
+    while(LT_R) {
+      rightward();
+    }
+    while(LT_L) {
+      leftward();
+    }
+  }
+}
+
 void loop() {
   //send data only when receive data
   if(Serial.available() > 0) { 
@@ -112,6 +131,7 @@ void loop() {
       case 'f' : setSpeed(127); break; // 50% duty cycle
       case 'g' : setSpeed(191); break; // 75% duty cycle
       case 'h' : setSpeed(255); break; // 100% duty cycle
+      case 'i' : lineTracking(); break;
     }
   }
 }

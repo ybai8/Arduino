@@ -33,9 +33,9 @@
 #define IN4 11
 
 //define line tracking IO pin
-#define LT_R !digitalRead(10)
-#define LT_M !digitalRead(4)
-#define LT_L !digitalRead(2)
+#define LT_R 10
+#define LT_M 4
+#define LT_L 2
 
 int pwm = 127;
 char signal;
@@ -47,6 +47,9 @@ void setup() {
   pinMode(IN2, OUTPUT);
   pinMode(IN3, OUTPUT);
   pinMode(IN4, OUTPUT);
+  pinMode(LT_R, INPUT);
+  pinMode(LT_M, INPUT);
+  pinMode(LT_L, INPUT);
   digitalWrite(ENA, LOW);
   digitalWrite(ENB, LOW);
   Serial.begin(9600);
@@ -79,7 +82,7 @@ void leftward() {
   digitalWrite(IN2, HIGH);
   digitalWrite(IN3, LOW);
   digitalWrite(IN4, HIGH);
-  delay(20);
+  delay(200);
 }
 
 void rightward() {
@@ -95,6 +98,10 @@ void rightward() {
 void stop() {
   digitalWrite(ENA, LOW);
   digitalWrite(ENB, LOW);
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, LOW);
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, LOW);
 }
 
 
@@ -105,14 +112,14 @@ void setSpeed(int p) {
 }
 
 void lineTracking() {
-  while(LT_M || LT_R || LT_L) {
-    while(LT_M) {
+  while(!digitalRead(LT_M) || !digitalRead(LT_R) || !digitalRead(LT_L)) {
+    while(!digitalRead(LT_M)) {
       forward();
     }
-    while(LT_R) {
+    while(!digitalRead(LT_R)) {
       rightward();
     }
-    while(LT_L) {
+    while(!digitalRead(LT_L)) {
       leftward();
     }
   }

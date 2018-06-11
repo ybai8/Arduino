@@ -105,7 +105,7 @@ void setSpeed(int p) {
 }
 
 void lineTracking() {
-  while(!Serial.available()) {
+  while(LT_M || LT_R || LT_L) {
     while(LT_M) {
       forward();
     }
@@ -116,6 +116,7 @@ void lineTracking() {
       leftward();
     }
   }
+  stop();
 }
 
 void loop() {

@@ -182,9 +182,15 @@ void turn() {
 
 void obstacleAvoidance() {
   while(!Serial.available()) {
-    myservo.write(75);
+    //optimize for table leg
+    myservo.write(60);
     delay(500);
     middleDistance = getDistance();
+    for(int angle = 75; angle <= 90; angle += 15) {
+      myservo.write(angle);
+      delay(500);
+      middleDistance = min(middleDistance, getDistance());
+    }
     if(middleDistance < 20) {
       backward();
       delay(300);
@@ -198,7 +204,6 @@ void obstacleAvoidance() {
 }
 
 void loop() {
-  //send data only when receive data
   if(Serial.available() > 0) { 
     signal = Serial.read();
     switch (signal) {

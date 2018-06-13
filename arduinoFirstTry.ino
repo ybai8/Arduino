@@ -1,3 +1,4 @@
+
 /*
  * Author : Yang Bai
  * L298N IO pin         Arduino UNO IO pin
@@ -23,6 +24,7 @@
  * High     High       High        Stopped
  */
 #include <SoftwareSerial.h>
+#include <Servo.h>
 
 //define the L298N IO pin
 #define ENA 5
@@ -37,8 +39,12 @@
 #define LT_M 4
 #define LT_L 2
 
-int pwm = 127;
+int pwm = 191;
 char signal;
+Servo myservo;
+int Echo = A4;
+int Trig = A5;
+int rightDistance = 0, leftDistance = 0, middleDistance = 0;
 
 void setup() {
   pinMode(ENA, OUTPUT);
@@ -52,6 +58,13 @@ void setup() {
   pinMode(LT_L, INPUT);
   digitalWrite(ENA, LOW);
   digitalWrite(ENB, LOW);
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, LOW);
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, LOW);
+  myservo.attach(3);
+  pinMode(Echo, INPUT);
+  pinMode(Trig, OUTPUT);
   Serial.begin(9600);
 }
 
@@ -126,6 +139,64 @@ void lineTracking() {
   stop();
 }
 
+int getDistance() {
+  digitalWrite(Trig, LOW);
+  delayMicroseconds(2);
+  digitalWrite(Trig, HIGH);
+  delayMicroseconds(20);
+  digitalWrite(Trig, LOW);
+  float distance = pulseIn(Echo, HIGH);
+  distance /= 58;
+  return (int) distance;
+}
+
+void turn() {
+  stop();
+  myservo.write(155);
+  delay(500);
+  leftDistance = getDistance();
+  if(leftDistance > 30) {
+    leftward();
+    delay(200);
+  } else {
+    myservo.write(0);
+    delay(1000);
+    rightDistance = getDistance();
+    if(rightDistance > 30) {
+      rightward();
+      delay(200);
+    } else {
+      backward();
+      delay(200);
+      int x = random(1);
+      if(x == 0) {
+        leftward();
+        delay(200);
+      } else {
+        rightward();
+        delay(200);
+      }
+    }
+  }
+}
+
+void obstacleAvoidance() {
+  while(!Serial.available()) {
+    myservo.write(75);
+    delay(500);
+    middleDistance = getDistance();
+    if(middleDistance < 20) {
+      backward();
+      delay(300);
+    } else if(middleDistance <= 40 && middleDistance > 20) {
+      turn();
+    } else {
+      forward();
+    }
+  }
+  stop();
+}
+
 void loop() {
   //send data only when receive data
   if(Serial.available() > 0) { 
@@ -140,6 +211,7 @@ void loop() {
       case 'g' : setSpeed(191); break; // 75% duty cycle
       case 'h' : setSpeed(255); break; // 100% duty cycle
       case 'i' : lineTracking(); break;
+      case 'j' : obstacleAvoidance(); break;
     }
   }
 }
